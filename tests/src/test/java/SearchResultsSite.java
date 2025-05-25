@@ -8,7 +8,7 @@ public class SearchResultsSite extends GTASite{
 
     @Override
     protected String expectedUrl(){
-        return "https://www.gtabase.com/search?q=" + searchWord;
+        return "https://www.gtabase.com/search?q=" + searchWord.trim();
     }
     
     protected static final By searchNumLoc = By.xpath("//div[@id='search-query-explained']");
@@ -20,9 +20,10 @@ public class SearchResultsSite extends GTASite{
         this.searchWord = searchWord;
     }
 
-    public String getSearchResultNum(){
+    public int getSearchResultNum(){
         WebElement searchResNum = wait4AndGetElement(searchNumLoc);
-        return searchResNum.getText();
+        return Integer.parseInt(searchResNum.getText().split(" ")[0]);
+        
     }
  
 }

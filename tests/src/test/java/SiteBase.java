@@ -14,15 +14,17 @@ public abstract class SiteBase {
         wait4Body();
     }
 
-    public SiteBase(WebTools wTools, String url){
-        this.wTools = wTools;
-        
-        this.wTools.getDriver().get(url);
-        wait4Body();
-    }
-
     public void wait4Element(By locator){
         wTools.getWait().until(ExpectedConditions.visibilityOfElementLocated(locator));
+    }
+
+    public void wait4HiddenElement(By locator){
+        wTools.getWait().until(ExpectedConditions.presenceOfElementLocated(locator));
+    }
+
+    public WebElement wait4AndGetHiddenElement(By locator){
+        wait4HiddenElement(locator);
+        return wTools.getDriver().findElement(locator);
     }
 
     public WebElement wait4AndGetElement(By locator){
@@ -47,6 +49,10 @@ public abstract class SiteBase {
         });
 
         return correctlyLoaded;
+    }
+
+    public String getTitle(){
+        return wTools.getDriver().getTitle();
     }
 
 }

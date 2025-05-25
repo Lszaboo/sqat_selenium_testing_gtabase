@@ -4,28 +4,19 @@ import javax.sound.midi.SysexMessage;
 
 import org.openqa.selenium.*;
 import org.openqa.selenium.interactions.Actions;
+import org.openqa.selenium.support.ui.ExpectedConditions;
 
 public abstract class GTASite extends SiteBase{
     
     protected static final By homeSiteLoc = By.xpath("//a[contains(@title,'GTA Base') and @href='/']"); 
     protected static final By logoutBtnLoc = By.xpath("//*[contains(@class,'user-navigation')]//*[contains(@href,'/logout/')]");
     protected static final By loginLoc = By.xpath("//a[contains(@href,'/login/')]"); 
-    //protected static final By searchBarTogglerLoc = By.xpath("//div[contains(@class,'dropdown search-toggle')]");
-    //protected static final By searchBarTogglerLoc = By.xpath("//div[@class='dropdown search-toggle']/div[@data-bs-toggle='dropdown']");
-    protected static final By searchBarTogglerLoc = By.xpath(
-        "//*[@id=\"ja-mainnav\"]/div/div/div/div[1]"
-    );
-
+    protected static final By searchBarTogglerLoc = By.xpath("//div[@class='dropdown search-toggle']/div[@data-bs-toggle='dropdown']");
     protected static final By searchInpLoc = By.xpath("//input[@name='q' and @type='text' and @id='mod-finder-searchword235']");
-
     protected static final By searchBtnLoc = By.xpath("//button[@type='submit']");
 
     public GTASite(WebTools wTools){
         super(wTools);
-    }
-
-    public GTASite(WebTools wTools, String url){
-        super(wTools,url);
     }
 
     public MainSite return2MainSite(){
@@ -49,36 +40,18 @@ public abstract class GTASite extends SiteBase{
     }
 
     public SearchResultsSite doSearch(String search){
-        WebElement searchBarTogglerBtn = wait4AndGetElement(By.cssSelector(
-            "div.dropdown-toggle.icon-search::before"
-        ));
-        wTools.getJS().executeScript("arguments[0].click()", searchBarTogglerBtn);
+        WebElement searchBarTogglerBtn = wait4AndGetElement(searchBarTogglerLoc);
         searchBarTogglerBtn.click();
-        //System.out.println(wTools.getDriver().getPageSource());
-        
-        //wTools.getJS().executeScript("arguments[0].click();", searchBarTogglerBtn);
-        
-        //searchBarTogglerBtn.click();
-        
-        List<WebElement> elements = wTools.getDriver().findElements(searchBarTogglerLoc);
-        System.out.println(elements.size());
-        elements.clear();
-        
-        elements = wTools.getDriver().findElements(searchInpLoc);
-        System.out.println(elements.size());
-        elements.clear();
 
-        elements = wTools.getDriver().findElements(searchBtnLoc);
-        System.out.println(elements.size());
-        elements.clear();
+        WebElement searchInp = wait4AndGetHiddenElement(searchInpLoc);
+        WebElement searchBtn = wait4AndGetHiddenElement(searchBtnLoc);
 
-        
+        wTools.getJS().executeScript("arguments[0].value = arguments[1];",searchInp,search);      
+        wTools.getJS().executeScript("arguments[0].click();",searchBtn);
 
-        WebElement searchInp = wait4AndGetElement(searchInpLoc);
-        WebElement searchBtn = wait4AndGetElement(searchBtnLoc);
 
-        searchInp.sendKeys(search);
-        searchBtn.click();
+        //searchInp.sendKeys(search);
+        //searchBtn.click();
 
         return new SearchResultsSite(wTools,search);
     }
