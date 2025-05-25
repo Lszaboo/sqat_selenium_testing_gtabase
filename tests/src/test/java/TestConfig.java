@@ -11,7 +11,9 @@ public class TestConfig {
         mainJSON = new JSONObject(jsonContent);
         JSONObject userConfig = mainJSON.getJSONObject("user_data");
 
-        user = new UserData(userConfig.getString("name"),
+        user = new UserData(userConfig.getString("display_name"),
+                            userConfig.getString("user_name"),
+                            userConfig.getString("email_address"),
                             userConfig.getString("password"));
     }
 }

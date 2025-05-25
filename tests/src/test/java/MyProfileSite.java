@@ -3,13 +3,17 @@ import org.openqa.selenium.support.ui.*;
 
 public class MyProfileSite extends GTASite{
     
+    @Override
+    protected String expectedUrl(){
+        return "https://www.gtabase.com/my-profile/";
+    }
+
     //*[contains(@class,'field-entry') and .//*[contains(text(),'Username')]]//*[not(contains(text(),'Username'))]
     //protected static final By accNameLocc = By.xpath("//*[contains(@class,'contact-name')]");
     protected static final By accInfoLoc = By.xpath("//*[contains(@id,'users-profile-core')]");
     protected static final By accUserNameLoc = By.xpath(accInfoXPath("Username"));
     protected static final By accDisplayNameLoc = By.xpath(accInfoXPath("Display Name"));
     protected static final By accEmailAddressNameLoc = By.xpath(accInfoXPath("Email Address"));
-
 
     protected static String accInfoXPath(String fieldName){        
         return "//*[contains(@id,'users-profile-core')]" + 
@@ -21,8 +25,8 @@ public class MyProfileSite extends GTASite{
     }
 
 
-    public MyProfileSite(WebDriver driver){
-        super(driver);        
+    public MyProfileSite(WebTools wTools){
+        super(wTools);        
     }
 
     public String getAccInfoText(){

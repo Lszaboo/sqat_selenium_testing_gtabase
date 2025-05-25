@@ -1,14 +1,18 @@
 import org.openqa.selenium.*;
-import org.openqa.selenium.support.ui.*;
 
 public class LogInSite extends GTASite {
     
+    @Override
+    protected String expectedUrl(){
+        return "https://www.gtabase.com/login/";
+    }
+
     protected static final By usrInpLoc = By.xpath("//input[contains(@name,'username')]");
     protected static final By pwdInpLoc = By.xpath("//input[contains(@name,'password')]");
     protected static final By loginBtnLoc = By.xpath("//button[contains(@type,'submit') and contains(text(),'Log in')]");
 
-    public LogInSite(WebDriver driver){
-        super(driver);
+    public LogInSite(WebTools wTools){
+        super(wTools);
     }
 
     public MyProfileSite doLogIn(String usr, String pwd){
@@ -20,6 +24,6 @@ public class LogInSite extends GTASite {
         pwdInp.sendKeys(pwd);
         loginBtn.click();
 
-        return new MyProfileSite(driver);
+        return new MyProfileSite(wTools);
     }
 }

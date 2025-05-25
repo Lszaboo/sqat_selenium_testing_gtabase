@@ -1,6 +1,8 @@
 {
     "user_data":{
-        "name":"handsome.jack",
+        "display_name":"Handsome Jack",
+        "user_name":"handsome.jack",
+        "email_address":"jackhandsome.hyperion01@gmail.com",
         "password":"hyp3r1on"
     }
 }

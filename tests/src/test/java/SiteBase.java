@@ -1,39 +1,52 @@
 import org.openqa.selenium.*;
 import org.openqa.selenium.support.ui.*;
 
-public class SiteBase {
+public abstract class SiteBase {
     
-    protected WebDriver driver;
-    protected WebDriverWait wait;
+    protected WebTools wTools;
 
     protected static final By bodyLoc = By.tagName("body");
     
-    public SiteBase(WebDriver driver){
-        this.driver = driver;
-        wait = new WebDriverWait(driver, 10);
-        
+    protected abstract String expectedUrl();
+    
+    public SiteBase(WebTools wTools){
+        this.wTools = wTools;        
         wait4Body();
     }
 
-    public SiteBase(WebDriver driver, String url){
-        this.driver = driver;
-        wait = new WebDriverWait(driver, 10);
+    public SiteBase(WebTools wTools, String url){
+        this.wTools = wTools;
         
-        this.driver.get(url);
+        this.wTools.getDriver().get(url);
         wait4Body();
     }
 
     public void wait4Element(By locator){
-        this.wait.until(ExpectedConditions.visibilityOfElementLocated(locator));
+        wTools.getWait().until(ExpectedConditions.visibilityOfElementLocated(locator));
     }
 
     public WebElement wait4AndGetElement(By locator){
         wait4Element(locator);
-        return this.driver.findElement(locator);
+        return wTools.getDriver().findElement(locator);
     }
 
     public void wait4Body(){
         wait4Element(bodyLoc);
+    }
+
+    public boolean isUrlCorrect(){
+        return wTools.getWait().until(ExpectedConditions.urlContains(expectedUrl()));
+    }
+
+    public boolean isSiteLoadedCorrectly(){
+        boolean correctlyLoaded = isUrlCorrect();
+        correctlyLoaded = correctlyLoaded && wTools.getWait().until(new ExpectedCondition<Boolean>() {
+            public Boolean apply(WebDriver driver) {
+                return wTools.getJS().executeScript("return document.readyState").equals("complete");
+            }
+        });
+
+        return correctlyLoaded;
     }
 
 }
