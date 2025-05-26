@@ -16,15 +16,19 @@ public class LogInSite extends GTASite {
         super(wTools);
     }
 
-    public MyProfileSite doLogIn(String usr, String pwd){
+    public void enterUserName(String username){
         WebElement usrInp = wait4AndGetElement(usrInpLoc);
+        usrInp.sendKeys(username);
+    }
+
+    public void enterPassword(String password){
         WebElement pwdInp = wait4AndGetElement(pwdInpLoc);
+        pwdInp.sendKeys(password);
+    }
+
+    public MyProfileSite clickLoginButton(){
         WebElement loginBtn = wait4AndGetElement(loginBtnLoc);
-
-        usrInp.sendKeys(usr);
-        pwdInp.sendKeys(pwd);
         loginBtn.click();
-
         return new MyProfileSite(wTools);
     }
 

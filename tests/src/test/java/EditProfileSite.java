@@ -13,13 +13,13 @@ public class EditProfileSite extends GTASite{
         super(wTools);
     }
 
-    public void rewriteBio(String text){
+    public void enterBio(String text){
         WebElement bioTxTArea = wait4AndGetElement(bioTxTAreaLoc);
         bioTxTArea.clear();
         bioTxTArea.sendKeys(text);
     }
 
-    public MyProfileSite saveEdits(){
+    public MyProfileSite clickSaveEdits(){
         WebElement saveProfileBtn = wait4AndGetElement(saveProfileBtnLoc);
         saveProfileBtn.click();
         return new MyProfileSite(wTools);

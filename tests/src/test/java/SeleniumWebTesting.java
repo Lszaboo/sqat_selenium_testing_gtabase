@@ -36,43 +36,48 @@ public class SeleniumWebTesting {
         history = new Stack<SiteBase>();
     }
 
-    protected MyProfileSite testSuccesfulLogin(MainSite mainS){
-        LogInSite loginS = mainS.go2Login();
-        MyProfileSite myProfileS = loginS.doLogIn(mainTc.user.userName,mainTc.user.password);
+    protected MyProfileSite loginFromLoginSite(LogInSite loginSite){
+        loginSite.enterUserName(mainTc.user.userName);
+        loginSite.enterPassword(mainTc.user.password);
+        return loginSite.clickLoginButton();
+    }
+
+    protected MyProfileSite loginFromSite(GTASite site){
+        MyProfileSite myProfileSite = loginFromLoginSite(site.clickBannerLoginButton());
+        assertTrue(myProfileSite.siteLoadedCorrectly());
+        assertTrue(myProfileSite.getAccountDisplayName().contains(mainTc.user.displayName));
+        assertTrue(myProfileSite.getAccountUserName().contains(mainTc.user.userName));
+        assertTrue(myProfileSite.getAccountEmailAddress().contains(mainTc.user.emailAddress));
+        return myProfileSite;
+    }
+
+    protected void logoutFromSite(GTASite site){
+        MainSite mainSite = site.clickBannerLogoutButton();
+        assertTrue(mainSite.siteLoadedCorrectly());
+    }
+
+    protected SearchResultsSite searchFromSite(GTASite site, String searchPhrase){
+        site.clickMagnifyingGlass();
+        site.enterSearchPhrase(searchPhrase);
+        SearchResultsSite searchResultSite = site.clickSearchButton();
         
-        assertTrue(myProfileS.isSiteLoadedCorrectly());
-        assertTrue(myProfileS.getAccDisplayName().contains(mainTc.user.displayName));
-        assertTrue(myProfileS.getAccUserName().contains(mainTc.user.userName));
-        assertTrue(myProfileS.getAccEmailAddress().contains(mainTc.user.emailAddress));
-
-        return myProfileS;
+        assertTrue(searchResultSite.siteLoadedCorrectly());
+        return searchResultSite;
     }
 
-    protected void testSuccesfulLogout(GTASite site){
-        MainSite mainS = site.doLogOut();
-        assertTrue(mainS.isSiteLoadedCorrectly());
-    }
-
-    protected SearchResultsSite testSearch(GTASite site, String search){
-        SearchResultsSite searchRessS = site.doSearch(search);
-        assertTrue(searchRessS.isSiteLoadedCorrectly());
-        return searchRessS;
-    }
-
-    protected void testStaticPageLoad(String staticUrl){
+    protected void loadStaticPageFromUrl(String staticUrl){
         StaticSite site = StaticSite.enter(mainWTools, staticUrl);
-        assertTrue(site.isSiteLoadedCorrectly());
+        assertTrue(site.siteLoadedCorrectly());
     }
 
-    protected void testProfileBioEdit(String bio){
-        MainSite mSite = MainSite.enter(mainWTools);
-        MyProfileSite mpSite = testSuccesfulLogin(mSite);
-        EditProfileSite epSite = mpSite.clickEditProfile();
-        epSite.rewriteBio(bio);
-        mpSite = epSite.saveEdits();
+    protected void editProfileBioFromSite(GTASite site,String bio){
+        MyProfileSite myProfileSite = loginFromSite(site);
+        EditProfileSite editProfileSite = myProfileSite.clickEditProfileButton();
+        editProfileSite.enterBio(bio);
+        myProfileSite = editProfileSite.clickSaveEdits();
         
-        assertEquals("Profile saved.", mpSite.getAlertMessage());
-        assertEquals(bio.trim(), mpSite.getAccBio().trim());
+        assertEquals("Profile saved.", myProfileSite.getAlertMessageText());
+        assertEquals(bio.trim(), myProfileSite.getAccountBioText().trim());
     }
 
     protected SiteBase record(SiteBase site){
@@ -83,81 +88,83 @@ public class SeleniumWebTesting {
     @Test
     public void testSingleStaticPageLoad() throws Exception{
         mainTc = new TestConfig("configs/conf_single_static_url.json");
-        testStaticPageLoad(mainTc.getUrlAt(0));
+        loadStaticPageFromUrl(mainTc.getUrlAt(0));
     }
     
     @Test
     public void testMultipleStaticPageLoad() throws Exception{
         mainTc = new TestConfig("configs/conf_multiple_static_urls.json"); 
-        for(int i =0; i<mainTc.getUrlLenght(); i++){
-            testStaticPageLoad(mainTc.getUrlAt(i));
+        for(int i =0; i<mainTc.getUrlsLenght(); i++){
+            loadStaticPageFromUrl(mainTc.getUrlAt(i));
         }
     }
     
     @Test
     public void testCorrectTitle() throws Exception{
         MainSite mainS = MainSite.enter(mainWTools);
-        assertEquals("GTA Base: Everything on GTA 6, GTA 5, RDR2 & Rockstar Games",mainS.getTitle());
+        assertEquals("GTA Base: Everything on GTA 6, GTA 5, RDR2 & Rockstar Games",mainS.getTitleText());
     }
 
     @Test
     public void testSuccessfulHandsomeJackLogin() throws Exception{
         mainTc = new TestConfig("configs/conf_handsome_jack.json");
         MainSite mainS = MainSite.enter(mainWTools);
-        testSuccesfulLogin(mainS);
+        loginFromSite(mainS);
     }
 
     @Test 
     public void testSuccessfulHandsomeJackLogout() throws Exception{
         mainTc = new TestConfig("configs/conf_handsome_jack.json");
-        MainSite mainS = MainSite.enter(mainWTools);
+        MainSite mainSite = MainSite.enter(mainWTools);
         
-        MyProfileSite myProfileS = testSuccesfulLogin(mainS);
-        testSuccesfulLogout(myProfileS);
+        MyProfileSite myProfileSite = loginFromSite(mainSite);
+        logoutFromSite(myProfileSite);
     }
 
     @Test 
     public void testSuccesfulSearch() throws Exception{
-        MainSite mainS = MainSite.enter(mainWTools);
-        SearchResultsSite site = testSearch(mainS, "Entity\n");
-        assertTrue(site.getSearchResultNum()>=1);        
+        MainSite mainSite = MainSite.enter(mainWTools);
+        SearchResultsSite searchResultsSite = searchFromSite(mainSite, "Entity\n");
+        assertTrue(searchResultsSite.getNumberOfSearchResults()>=1);        
     }
 
     @Test
     public void testDefinedProfileBioEdit() throws Exception{
         mainTc = new TestConfig("configs/conf_handsome_jack.json");
-        testProfileBioEdit(mainTc.user.bio);
+        MainSite mainSite = MainSite.enter(mainWTools);
+        editProfileBioFromSite(mainSite,mainTc.user.bio);
     }
 
     @Test
     public void testRandomProfileBioEdit() throws Exception{
         mainTc = new TestConfig("configs/conf_handsome_jack.json");
-        testProfileBioEdit("Handsome Jack's current favourite number is: " + (int)(Math.random() * 999));
+        MainSite mainSite = MainSite.enter(mainWTools);
+        editProfileBioFromSite(mainSite,"Handsome Jack's current favourite number is: " + (int)(Math.random() * 999));
     }
 
     @Test
     public void testLoginHistory() throws Exception{
         mainTc = new TestConfig("configs/conf_handsome_jack.json");
-        MainSite mSite = MainSite.enter(mainWTools);
-        LogInSite liSite = mSite.go2Login();
-        MyProfileSite mpSite = liSite.doLogIn(mainTc.user.userName,mainTc.user.password);
-        mpSite.backToPrevPage();
-        assertEquals("You are already logged in.", liSite.getLogoutMsgText());
+        MainSite mainSite = MainSite.enter(mainWTools);
+        LogInSite logInSite = mainSite.clickBannerLoginButton();
+        MyProfileSite myProfileSite = loginFromLoginSite(logInSite);
+        myProfileSite.backToPrevPage();
+        assertEquals("You are already logged in.", logInSite.getLogoutMsgText());
     }
 
     @Test
     public void testLongHistory() throws Exception{
         mainTc = new TestConfig("configs/conf_handsome_jack.json");
-        MainSite mSite = (MainSite)record(MainSite.enter(mainWTools));
-        LogInSite liSite = (LogInSite)record(mSite.go2Login());
-        MyProfileSite mpSite = (MyProfileSite)record(liSite.doLogIn(mainTc.user.userName,mainTc.user.password));
-        SearchResultsSite srSite = (SearchResultsSite)record(mpSite.doSearch("banshee"));
-        SiteBase site = srSite.doSearch("banshee gts");
+        MainSite mainSite = (MainSite)record(MainSite.enter(mainWTools));
+        LogInSite logInSite = (LogInSite)record(mainSite.clickBannerLoginButton());
+        MyProfileSite myProfileSite = (MyProfileSite)record(loginFromLoginSite(logInSite));
+        SearchResultsSite searchResultsSite = (SearchResultsSite)record(searchFromSite(myProfileSite,"banshee"));
+        SiteBase site = searchFromSite(searchResultsSite,"banshee gts");
         
         while (!history.empty()) {
             site.backToPrevPage();
             site = history.pop();
-            assertTrue(site.isSiteLoadedCorrectly());
+            assertTrue(site.siteLoadedCorrectly());
         }
     }
 

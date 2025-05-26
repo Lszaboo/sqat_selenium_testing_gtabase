@@ -9,38 +9,44 @@ public abstract class GTASite extends SiteBase{
     protected static final By searchInpLoc = By.xpath("//input[@name='q' and @type='text' and @id='mod-finder-searchword235']");
     protected static final By searchBtnLoc = By.xpath("//button[@type='submit']");
 
+    protected String searchPhrase = "";
+
     public GTASite(WebTools wTools){
         super(wTools);
     }
 
-    public MainSite return2MainSite(){
+    public MainSite clickGTABaseLogo(){
         WebElement returnElement = wait4AndGetElement(homeSiteLoc);
         returnElement.click();
         return new MainSite(wTools);
     }
 
-    public MainSite doLogOut(){
+    public MainSite clickBannerLogoutButton(){
         WebElement logoutBtn = wait4AndGetElement(logoutBtnLoc);
         logoutBtn.click();
         return new MainSite(wTools);
     }
 
-    public LogInSite go2Login(){
+    public LogInSite clickBannerLoginButton(){
         WebElement loginElement = wait4AndGetElement(loginLoc);
         loginElement.click();
         return new LogInSite(wTools);
     }
 
-    public SearchResultsSite doSearch(String search){
+    public void clickMagnifyingGlass(){
         WebElement searchBarTogglerBtn = wait4AndGetElement(searchBarTogglerLoc);
         searchBarTogglerBtn.click();
+    }
 
+    public void enterSearchPhrase(String searchPhrase){
+        this.searchPhrase = searchPhrase;
         WebElement searchInp = wait4AndGetHiddenElement(searchInpLoc);
-        WebElement searchBtn = wait4AndGetHiddenElement(searchBtnLoc);
+        wTools.getJS().executeScript("arguments[0].value = arguments[1];",searchInp,searchPhrase);
+    }
 
-        wTools.getJS().executeScript("arguments[0].value = arguments[1];",searchInp,search);      
+    public SearchResultsSite clickSearchButton(){
+        WebElement searchBtn = wait4AndGetHiddenElement(searchBtnLoc);
         wTools.getJS().executeScript("arguments[0].click();",searchBtn);
-        
-        return new SearchResultsSite(wTools,search);
+        return new SearchResultsSite(wTools,searchPhrase);
     }
 }

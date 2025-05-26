@@ -36,12 +36,12 @@ public abstract class SiteBase {
         wait4Element(bodyLoc);
     }
 
-    public boolean isUrlCorrect(){
+    public boolean urlCorrect(){
         return wTools.getWait().until(ExpectedConditions.urlContains(expectedUrl()));
     }
 
-    public boolean isSiteLoadedCorrectly(){
-        boolean correctlyLoaded = isUrlCorrect();
+    public boolean siteLoadedCorrectly(){
+        boolean correctlyLoaded = urlCorrect();
         correctlyLoaded = correctlyLoaded && wTools.getWait().until(new ExpectedCondition<Boolean>() {
             public Boolean apply(WebDriver driver) {
                 return wTools.getJS().executeScript("return document.readyState").equals("complete");
@@ -51,7 +51,7 @@ public abstract class SiteBase {
         return correctlyLoaded;
     }
 
-    public String getTitle(){
+    public String getTitleText(){
         return wTools.getDriver().getTitle();
     }
 

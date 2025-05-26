@@ -20,7 +20,7 @@ public class SearchResultsSite extends GTASite{
         this.searchWord = searchWord;
     }
 
-    public int getSearchResultNum(){
+    public int getNumberOfSearchResults(){
         WebElement searchResNum = wait4AndGetElement(searchNumLoc);
         return Integer.parseInt(searchResNum.getText().split(" ")[0]);
     }

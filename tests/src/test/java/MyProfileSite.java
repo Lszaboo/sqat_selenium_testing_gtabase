@@ -32,38 +32,38 @@ public class MyProfileSite extends GTASite{
         super(wTools);        
     }
 
-    public String getAccInfoText(){
+    public String getAccountInfoText(){
         WebElement accInfo = wait4AndGetElement(accInfoLoc);
         return accInfo.getText();
     }
 
-    public String getAccUserName(){
+    public String getAccountUserName(){
         WebElement accUserName = wait4AndGetElement(accUserNameLoc);
         return accUserName.getText();
     }
 
-    public String getAccDisplayName(){
+    public String getAccountDisplayName(){
         WebElement accDisplayName = wait4AndGetElement(accDisplayNameLoc);
         return accDisplayName.getText();
     }
 
-    public String getAccEmailAddress(){
+    public String getAccountEmailAddress(){
         WebElement accEmailAddress = wait4AndGetElement(accEmailAddressNameLoc);
         return accEmailAddress.getText();
     }
 
-    public String getAccBio(){
+    public String getAccountBioText(){
         WebElement accBio = wait4AndGetElement(accBioLoc);
         return accBio.getText();
     }
 
-    public EditProfileSite clickEditProfile(){
+    public EditProfileSite clickEditProfileButton(){
         WebElement editProfileBtn = wait4AndGetElement(editProfileBtnLoc);
         editProfileBtn.click();
         return new EditProfileSite(wTools);
     }
 
-    public String getAlertMessage(){
+    public String getAlertMessageText(){
         WebElement alertMsg = wait4AndGetElement(alertMsgLoc);
         return alertMsg.getText();
     }

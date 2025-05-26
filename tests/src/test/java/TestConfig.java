@@ -33,7 +33,7 @@ public class TestConfig {
         return urls.get(index);
     }
 
-    public int getUrlLenght(){
+    public int getUrlsLenght(){
         return urls.size();
     }
 }
