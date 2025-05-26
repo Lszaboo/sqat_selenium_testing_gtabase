@@ -13,15 +13,19 @@ import static org.junit.Assert.assertTrue;
 
 import java.net.MalformedURLException;
 
+import java.util.Stack;
+
 public class SeleniumWebTesting {
 
     protected RemoteWebDriver mainDriver;
     protected WebDriverWait mainWait;
     protected JavascriptExecutor mainJS;
     protected WebTools mainWTools;
+    protected TestConfig mainTc;
+    protected Stack<SiteBase> history;
 
     @Before
-    public void setup() throws MalformedURLException {
+    public void setup() throws Exception {
         ChromeOptions options = new ChromeOptions();
 
         mainDriver = new RemoteWebDriver(new URL("http://selenium:4444/wd/hub"), options);
@@ -31,25 +35,20 @@ public class SeleniumWebTesting {
         
         mainJS = (JavascriptExecutor) mainDriver;
         mainWTools = new WebTools(mainDriver,mainWait,mainJS);
+        
+        mainTc = new TestConfig("configs/conf_empty.json");
+
+        history = new Stack<SiteBase>();
     }
 
-    //private void assertFlashMsg(String msg){
-    //    WebElement flashMsg = waitVisibiiltyAndFindElement(flashLoc);
-    //    Assert.assertTrue(flashMsg.getText().contains(msg));
-    //}
-
-    protected TestConfig loadTestConfig(String path) throws Exception{
-        return new TestConfig(path);
-    }
-
-    protected MyProfileSite testSuccesfulLogin(MainSite mainS,TestConfig tc){
+    protected MyProfileSite testSuccesfulLogin(MainSite mainS){
         LogInSite loginS = mainS.go2Login();
-        MyProfileSite myProfileS = loginS.doLogIn(tc.user.userName,tc.user.password);
+        MyProfileSite myProfileS = loginS.doLogIn(mainTc.user.userName,mainTc.user.password);
         
         assertTrue(myProfileS.isSiteLoadedCorrectly());
-        assertTrue(myProfileS.getAccDisplayName().contains(tc.user.displayName));
-        assertTrue(myProfileS.getAccUserName().contains(tc.user.userName));
-        assertTrue(myProfileS.getAccEmailAddress().contains(tc.user.emailAddress));
+        assertTrue(myProfileS.getAccDisplayName().contains(mainTc.user.displayName));
+        assertTrue(myProfileS.getAccUserName().contains(mainTc.user.userName));
+        assertTrue(myProfileS.getAccEmailAddress().contains(mainTc.user.emailAddress));
 
         return myProfileS;
     }
@@ -65,46 +64,107 @@ public class SeleniumWebTesting {
         return searchRessS;
     }
 
-    //@Test
-    public void testStaticPageLoad() throws Exception{
-        TestConfig tc = loadTestConfig("configs/handsome_jack.json");
-        MainSite mainS = MainSite.enter(mainWTools);
-        assertTrue(mainS.isSiteLoadedCorrectly());
+    protected void testStaticPageLoad(String staticUrl){
+        StaticSite site = StaticSite.enter(mainWTools, staticUrl);
+        assertTrue(site.isSiteLoadedCorrectly());
     }
 
-    //@Test
+    protected void testProfileBioEdit(String bio){
+        MainSite mSite = MainSite.enter(mainWTools);
+        MyProfileSite mpSite = testSuccesfulLogin(mSite);
+        EditProfileSite epSite = mpSite.clickEditProfile();
+        epSite.rewriteBio(bio);
+        mpSite = epSite.saveEdits();
+        
+        assertEquals("Profile saved.", mpSite.getAlertMessage());
+        assertEquals(bio.trim(), mpSite.getAccBio().trim());
+    }
+
+    protected SiteBase record(SiteBase site){
+        history.push(site);
+        return site;
+    }
+
+    @Test
+    public void testSingleStaticPageLoad() throws Exception{
+        mainTc = new TestConfig("configs/conf_single_static_url.json");
+        testStaticPageLoad(mainTc.getUrlAt(0));
+    }
+    
+    @Test
+    public void testMultipleStaticPageLoad() throws Exception{
+        mainTc = new TestConfig("configs/conf_multiple_static_urls.json"); 
+        for(int i =0; i<mainTc.getUrlLenght(); i++){
+            testStaticPageLoad(mainTc.getUrlAt(i));
+        }
+    }
+    
+    @Test
     public void testCorrectTitle() throws Exception{
-        TestConfig tc = loadTestConfig("configs/handsome_jack.json");
         MainSite mainS = MainSite.enter(mainWTools);
         assertEquals("GTA Base: Everything on GTA 6, GTA 5, RDR2 & Rockstar Games",mainS.getTitle());
     }
 
-    //@Test
+    @Test
     public void testSuccessfulHandsomeJackLogin() throws Exception{
-        TestConfig tc = loadTestConfig("configs/handsome_jack.json");
+        mainTc = new TestConfig("configs/conf_handsome_jack.json");
         MainSite mainS = MainSite.enter(mainWTools);
-        testSuccesfulLogin(mainS,tc);
+        testSuccesfulLogin(mainS);
     }
 
-    //@Test 
+    @Test 
     public void testSuccessfulHandsomeJackLogout() throws Exception{
-        TestConfig tc = loadTestConfig("configs/handsome_jack.json");
+        mainTc = new TestConfig("configs/conf_handsome_jack.json");
         MainSite mainS = MainSite.enter(mainWTools);
         
-        MyProfileSite myProfileS = testSuccesfulLogin(mainS,tc);
+        MyProfileSite myProfileS = testSuccesfulLogin(mainS);
         testSuccesfulLogout(myProfileS);
     }
 
-    //@Test 
+    @Test 
     public void testSuccesfulSearch() throws Exception{
-        TestConfig tc = loadTestConfig("configs/handsome_jack.json");
         MainSite mainS = MainSite.enter(mainWTools);
-
         SearchResultsSite site = testSearch(mainS, "Entity\n");
         assertTrue(site.getSearchResultNum()>=1);        
     }
 
+    @Test
+    public void testDefinedProfileBioEdit() throws Exception{
+        mainTc = new TestConfig("configs/conf_handsome_jack.json");
+        testProfileBioEdit(mainTc.user.bio);
+    }
 
+    @Test
+    public void testRandomProfileBioEdit() throws Exception{
+        mainTc = new TestConfig("configs/conf_handsome_jack.json");
+        testProfileBioEdit("Handsome Jack's current favourite number is: " + (int)(Math.random() * 999));
+    }
+
+    @Test
+    public void testLoginHistory() throws Exception{
+        mainTc = new TestConfig("configs/conf_handsome_jack.json");
+        MainSite mSite = MainSite.enter(mainWTools);
+        LogInSite liSite = mSite.go2Login();
+        MyProfileSite mpSite = liSite.doLogIn(mainTc.user.userName,mainTc.user.password);
+        mpSite.backToPrevPage();
+        assertEquals("You are already logged in.", liSite.getLogoutMsgText());
+    }
+
+    @Test
+    public void testLongHistory() throws Exception{
+        mainTc = new TestConfig("configs/conf_handsome_jack.json");
+        MainSite mSite = (MainSite)record(MainSite.enter(mainWTools));
+        LogInSite liSite = (LogInSite)record(mSite.go2Login());
+        MyProfileSite mpSite = (MyProfileSite)record(liSite.doLogIn(mainTc.user.userName,mainTc.user.password));
+        SearchResultsSite srSite = (SearchResultsSite)record(mpSite.doSearch("banshee"));
+        SiteBase site = srSite.doSearch("banshee gts");
+        
+        while (!history.empty()) {
+            site.backToPrevPage();
+            site = history.pop();
+            assertTrue(site.isSiteLoadedCorrectly());
+        }
+    }
 
     @After
     public void close() {

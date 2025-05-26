@@ -1,0 +1,17 @@
+{
+    "user_data":{
+        "display_name":"",
+        "user_name":"",
+        "email_address":"",
+        "bio":"",
+        "password":""
+    },
+    "urls":[
+        "https://www.gtabase.com/",
+        "https://www.gtabase.com/login/",
+        "https://www.gtabase.com/search?q=Entity",
+        "https://www.gtabase.com/search?q=Adder",
+        "https://www.gtabase.com/search?q=f-160+raiju",
+        "https://www.gtabase.com/search?q=akula"
+    ] 
+}

@@ -3,6 +3,8 @@
         "display_name":"Handsome Jack",
         "user_name":"handsome.jack",
         "email_address":"jackhandsome.hyperion01@gmail.com",
+        "bio":"This the profile of Handsome Jack, CEO of the mighty Hyperion Corporation!\n",
         "password":"hyp3r1on"
-    }
+    },
+    "urls":[]
 }

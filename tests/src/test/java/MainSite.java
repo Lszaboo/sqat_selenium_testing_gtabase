@@ -14,7 +14,6 @@ public class MainSite extends GTASite{
     public static MainSite enter(WebTools wTools){
         wTools.getDriver().get("https://www.gtabase.com/");
         MainSite site = new MainSite(wTools);
-        site.wait4Body();
         return site;
     }
 

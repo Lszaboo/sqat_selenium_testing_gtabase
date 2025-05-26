@@ -55,4 +55,7 @@ public abstract class SiteBase {
         return wTools.getDriver().getTitle();
     }
 
+    public void backToPrevPage(){
+        wTools.driver.navigate().back();
+    }
 }
