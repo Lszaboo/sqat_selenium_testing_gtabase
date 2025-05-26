@@ -30,3 +30,5 @@ gradle clean && gradle test
 ### The Selenium tests can be viewed through a web browser by going to:
 
 [here](http://localhost:8081/)
+
+# Runs locally on the gradle setup!
