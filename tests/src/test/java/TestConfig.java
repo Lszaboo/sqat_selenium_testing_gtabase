@@ -5,7 +5,6 @@ import java.nio.file.Paths;
 import java.util.List;
 import java.util.ArrayList;
 
-
 public class TestConfig {
     protected JSONObject mainJSON;
     protected List<String> urls;

@@ -1,5 +1,3 @@
-import org.openqa.selenium.*;
-
 public class MainSite extends GTASite{
     
     @Override

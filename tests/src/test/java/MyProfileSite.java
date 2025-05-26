@@ -1,5 +1,4 @@
 import org.openqa.selenium.*;
-import org.openqa.selenium.support.ui.*;
 
 public class MyProfileSite extends GTASite{
     

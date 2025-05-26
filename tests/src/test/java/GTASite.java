@@ -1,10 +1,4 @@
-import java.util.List;
-
-import javax.sound.midi.SysexMessage;
-
 import org.openqa.selenium.*;
-import org.openqa.selenium.interactions.Actions;
-import org.openqa.selenium.support.ui.ExpectedConditions;
 
 public abstract class GTASite extends SiteBase{
     
@@ -30,9 +24,7 @@ public abstract class GTASite extends SiteBase{
         logoutBtn.click();
         return new MainSite(wTools);
     }
-//div[@id='search-result-list']//div[@class='item-info']/h2/a[contains(text(),'Entity')]
-//div[@id='search-result-list']//div[@class='item-info']//h2[contains(text(),Entity)]
-//div[@id='search-result-list']/div[1]//h2
+
     public LogInSite go2Login(){
         WebElement loginElement = wait4AndGetElement(loginLoc);
         loginElement.click();
@@ -48,11 +40,7 @@ public abstract class GTASite extends SiteBase{
 
         wTools.getJS().executeScript("arguments[0].value = arguments[1];",searchInp,search);      
         wTools.getJS().executeScript("arguments[0].click();",searchBtn);
-
-
-        //searchInp.sendKeys(search);
-        //searchBtn.click();
-
+        
         return new SearchResultsSite(wTools,search);
     }
 }

@@ -1,6 +1,3 @@
-//import static org.junit.Assert.assertEquals;
-//import static org.junit.Assert.assertFalse;
-import org.apache.commons.collections.functors.ExceptionPredicate;
 import org.junit.*;
 import org.openqa.selenium.*;
 import org.openqa.selenium.chrome.*;
@@ -10,8 +7,6 @@ import java.net.URL;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
-
-import java.net.MalformedURLException;
 
 import java.util.Stack;
 

@@ -1,3 +1,4 @@
+
 public class StaticSite extends GTASite{
     @Override
     protected String expectedUrl(){
